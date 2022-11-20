@@ -1,17 +1,18 @@
 from __future__ import annotations
 
 import random
-from typing import Optional, Union
+from typing import Optional, TypeVar, Union
 
 from scalarflow.core.common import Identifiable, SetPropertyNotAllowedError
-from scalarflow.core.operator import Operator
+
+_Operator = TypeVar("_Operator")
 
 
 class Scalar(Identifiable):
     def __init__(
         self,
         data: Optional[Union[int, float]] = None,
-        operator: Optional[Operator] = None,
+        operator: Optional[_Operator] = None,
         trainable: Optional[bool] = False,
     ) -> None:
         """Represents a scalar value and associated properties.
@@ -47,7 +48,7 @@ class Scalar(Identifiable):
         self._data = updated_value
 
     @property
-    def operator(self) -> Optional[Operator]:
+    def operator(self) -> Optional[_Operator]:
         return self._operator
 
     @operator.setter
@@ -69,3 +70,14 @@ class Scalar(Identifiable):
     @gradient.setter
     def gradient(self, updated_value: float) -> None:
         self._gradient = updated_value
+
+
+def make_scalar(scalar_like: Union[Scalar, int, float]) -> Scalar:
+    if isinstance(scalar_like, Scalar):
+        return scalar_like
+    if isinstance(scalar_like, (int, float)):
+        return Scalar(data=scalar_like)
+
+    raise TypeError(
+        "Argument 'scalar_like' can only be one of three types: Scalar, int or float"
+    )

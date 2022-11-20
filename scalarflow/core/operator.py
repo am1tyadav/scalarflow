@@ -1,7 +1,7 @@
 from typing import Optional, Tuple, Union
 
-from scalarflow.core.common import Identifiable, SetPropertyNotAllowedError, make_scalar
-from scalarflow.core.scalar import Scalar
+from scalarflow.core.common import Identifiable, SetPropertyNotAllowedError
+from scalarflow.core.scalar import Scalar, make_scalar
 
 
 class Operator(Identifiable):
@@ -13,8 +13,7 @@ class Operator(Identifiable):
 
         Args:
             name: Name of the Operator, used just for plotting and logging
-            num_arguments: Number of arguments that this operator's __call__
-                method should expect.
+            num_arguments: Number of arguments that this operator should expect.
         """
 
         super().__init__()
@@ -70,3 +69,111 @@ class Operator(Identifiable):
 
     def backward(self) -> None:
         raise NotImplementedError("The method 'backward' is not yet implemented")
+
+
+class Add(Operator):
+    def __init__(self) -> None:
+        super().__init__(name="add", num_arguments=2)
+
+    def forward(self) -> None:
+        data = self.arguments[0].data + self.arguments[1].data
+        self._result = Scalar(data=data, operator=self)
+
+    def backward(self) -> None:
+        self.arguments[0].gradient += self.result.gradient
+        self.arguments[1].gradient += self.result.gradient
+
+
+class Subtract(Operator):
+    def __init__(self) -> None:
+        super().__init__(name="subtract", num_arguments=2)
+
+    def forward(self) -> None:
+        data = self.arguments[0].data - self.arguments[1].data
+        self._result = Scalar(data=data, operator=self)
+
+    def backward(self) -> None:
+        self.arguments[0].gradient += self.result.gradient
+        self.arguments[1].gradient += self.result.gradient * -1
+
+
+class Multiply(Operator):
+    def __init__(self) -> None:
+        super().__init__(name="multiply", num_arguments=2)
+
+    def forward(self) -> None:
+        data = self.arguments[0].data * self.arguments[1].data
+        self._result = Scalar(data=data, operator=self)
+
+    def backward(self) -> None:
+        self.arguments[0].gradient += self.result.gradient * self.arguments[1].data
+        self.arguments[1].gradient += self.result.gradient * self.arguments[0].data
+
+
+class Power(Operator):
+    def __init__(self, power: int) -> None:
+        super().__init__(name=f"power_{power}", num_arguments=1)
+
+        self._power = power
+
+    def forward(self) -> None:
+        data = self.arguments[0].data ** self._power
+        self._result = Scalar(data=data, operator=self)
+
+    def backward(self) -> None:
+        self.arguments[0].gradient += (
+            self.result.gradient
+            * self._power
+            * self.arguments[0].data ** (self._power - 1)
+        )
+
+
+def add(a: Scalar, b: Scalar) -> Scalar:
+    """Convenience function to add two Scalars.
+    Args:
+        a: Scalar
+        b: Scalar
+
+    Returns:
+        a + b
+    """
+    return Add()(arguments=(a, b))
+
+
+def subtract(a: Scalar, b: Scalar) -> Scalar:
+    """Convenience function to subtract two Scalars.
+
+    Args:
+        a: Scalar
+        b: Scalar
+
+    Returns:
+        a - b
+    """
+    return Subtract()(arguments=(a, b))
+
+
+def multiply(a: Scalar, b: Scalar) -> Scalar:
+    """Convenience function to multiply two scalars.
+
+    Args:
+        a: Scalar
+        b: Scalar
+
+    Returns:
+        a * b
+    """
+    return Multiply()(arguments=(a, b))
+
+
+def power(a: Scalar, b: int) -> Scalar:
+    """Convenience function to compute power of a Scalar.
+
+    Args:
+        a: Scalar
+        b: int value to be used as the power of the Scalar a
+
+    Returns:
+        a ** b
+    """
+    return Power(power=b)(arguments=(a,))

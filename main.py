@@ -1,7 +1,11 @@
-from scalarflow.core.scalar import Scalar
+from scalarflow.core.operator import add, multiply, power, subtract
 
-s = Scalar()
+a = add(1, 2)
 
-print(s)
+b = subtract(a, 2)
 
-s.operator = None
+c = multiply(2, b)
+
+d = power(c, 3)
+
+print(d)
