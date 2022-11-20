@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import random
 from typing import Optional, Union
 
@@ -12,6 +14,17 @@ class Scalar(Identifiable):
         operator: Optional[Operator] = None,
         trainable: Optional[bool] = False,
     ) -> None:
+        """Represents a scalar value and associated properties.
+
+        Args:
+            data: Value of the scalar, could be int or float but is
+                always cast to a float
+            operator: Reference to the operator, if any, that resulted in
+                the scalar instance.
+            trainable: A flag to set if the scalar is updated during
+                training.
+        """
+
         super().__init__()
 
         self._data = float(data) if data is not None else random.random()
@@ -27,8 +40,11 @@ class Scalar(Identifiable):
         return self._data
 
     @data.setter
-    def data(self, *_) -> None:
-        raise SetPropertyNotAllowedError("data")
+    def data(self, updated_value: float) -> None:
+        if not self.trainable:
+            raise SetPropertyNotAllowedError("data")
+
+        self._data = updated_value
 
     @property
     def operator(self) -> Optional[Operator]:
