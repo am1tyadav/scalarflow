@@ -2,13 +2,13 @@ import uuid
 
 
 class SetPropertyNotAllowedError(Exception):
-    def __init__(self, *args: object) -> None:
+    def __init__(self, name: str, *args: object) -> None:
         """SetPropertyNotAllowedError
-    
+
         Raised when there's an attempt to set a property value in the
         instances where it's not allowed.
         """
-        super().__init__("Setting a value for this property is not allowed", *args)
+        super().__init__(f"Setting a value for property {name} is not allowed", *args)
 
 
 class Identifiable:
@@ -21,4 +21,4 @@ class Identifiable:
 
     @uuid.setter
     def uuid(self, *_):
-        raise SetPropertyNotAllowedError()
+        raise SetPropertyNotAllowedError("uuid")
