@@ -1,11 +1,7 @@
-from scalarflow.core.operator import add, multiply, power, subtract
+import scalarflow as sf
 
-a = add(1, 2)
+n = sf.Node(num_inputs=3)
 
-b = subtract(a, 2)
+output = n(inputs=(1, 2, 3))
 
-c = multiply(2, b)
-
-d = power(c, 3)
-
-print(d)
+print(output)

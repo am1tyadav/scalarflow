@@ -110,6 +110,28 @@ class Multiply(Operator):
         self.arguments[1].gradient += self.result.gradient * self.arguments[0].data
 
 
+class Divide(Operator):
+    def __init__(self) -> None:
+        super().__init__(name="divide", num_arguments=2)
+
+    def forward(self) -> None:
+        a = self.arguments[0].data
+        b = self.arguments[1].data
+
+        assert b != 0, "Can not divide by zero"
+
+        data = a / b
+        self._result = Scalar(data=data, operator=self)
+
+    def backward(self) -> None:
+        self.arguments[0].gradient += self.result.gradient * (
+            self.arguments[1].data ** -1
+        )
+        self.arguments[1].gradient += self.result.gradient * (
+            -1 * self.arguments[0].data * (self.arguments[1].data ** -2)
+        )
+
+
 class Power(Operator):
     def __init__(self, power: int) -> None:
         super().__init__(name=f"power_{power}", num_arguments=1)
@@ -164,6 +186,19 @@ def multiply(a: Scalar, b: Scalar) -> Scalar:
         a * b
     """
     return Multiply()(arguments=(a, b))
+
+
+def divide(a: Scalar, b: Scalar) -> Scalar:
+    """Convenience function to divide two scalars.
+
+    Args:
+        a: Scalar
+        b: Scalar
+
+    Returns:
+        a / b
+    """
+    return Divide()(arguments=(a, b))
 
 
 def power(a: Scalar, b: int) -> Scalar:
