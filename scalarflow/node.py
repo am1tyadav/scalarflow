@@ -31,3 +31,12 @@ class Node:
         if self._activation is None:
             return result
         return self._activation(result)
+
+    def summary(self) -> None:
+        print("=" * 10, "Weights", "=" * 10)
+
+        for weight in self._weights:
+            print(weight)
+
+        print("=" * 10, "Bias", "=" * 10)
+        print(self._bias)
