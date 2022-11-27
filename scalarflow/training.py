@@ -51,3 +51,13 @@ def optimisation_step(root: Scalar, lr: float) -> None:
         if isinstance(op_or_scalar, Scalar):
             if op_or_scalar.trainable:
                 op_or_scalar.data = op_or_scalar.data - lr * op_or_scalar.gradient
+
+
+def accuracy(
+    y_true: Tuple[float], y_pred: Tuple[Scalar], threshold: float = 0.5
+) -> float:
+    total_examples = len(y_true)
+    correct = sum(
+        [gt == float(pred.data > threshold) for gt, pred in zip(y_true, y_pred)]
+    )
+    return correct / total_examples
