@@ -28,7 +28,7 @@ class Scalar(Identifiable):
 
         super().__init__()
 
-        self._data = float(data) if data is not None else random.random()
+        self._data = float(data) if data is not None else (random.random() - 0.5) / 10
         self._operator = operator
         self._trainable = trainable
         self._gradient = 0.0
