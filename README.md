@@ -8,6 +8,32 @@ understand functionality under the hood.
 
 This project is heavily inspired by [Micrograd](https://github.com/karpathy/micrograd).
 
+## Installation
+
+Create a virtual enivironment:
+
+```sh
+python -m venv venv
+
+source venv/bin/activate
+```
+
+Install `scalarflow` with pip in one of the following ways:
+
+```sh
+pip install git+https://github.com/am1tyadav/scalarflow
+```
+
+or
+
+```sh
+git clone https://github.com/am1tyadav/scalarflow
+
+cd scalarflow
+
+pip install .
+```
+
 ## Usage
 
 ```python
