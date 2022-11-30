@@ -8,9 +8,8 @@ class ReLU(Operator):
     def __init__(self) -> None:
         super().__init__(name="relu", num_arguments=1)
 
-    def forward(self) -> None:
-        data = max(self.arguments[0].data, 0.0)
-        self._result = Scalar(data=data, operator=self)
+    def forward(self) -> float:
+        return max(self.arguments[0].data, 0.0)
 
     def backward(self) -> None:
         self.arguments[0].gradient += float(self.result.data > 0) * self.result.gradient
@@ -26,9 +25,8 @@ class Sigmoid(Operator):
     def sigmoid(x: float) -> float:
         return 1 / (1 + math.e ** (-x))
 
-    def forward(self) -> None:
-        data = self.sigmoid(self.arguments[0].data)
-        self._result = Scalar(data=data, operator=self)
+    def forward(self) -> float:
+        return self.sigmoid(self.arguments[0].data)
 
     def backward(self) -> None:
         x = self.arguments[0].data

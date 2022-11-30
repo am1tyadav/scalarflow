@@ -29,7 +29,7 @@ class Operator(Identifiable):
 
     def __call__(self, arguments: Union[Scalar, int, float]) -> Scalar:
         self._arguments = [make_scalar(argument) for argument in arguments]
-        self.forward()
+        self._result = Scalar(data=self.forward(), operator=self)
         return self._result
 
     @property
@@ -64,7 +64,7 @@ class Operator(Identifiable):
     def result(self, *_) -> None:
         raise SetPropertyNotAllowedError("result")
 
-    def forward(self) -> None:
+    def forward(self) -> float:
         raise NotImplementedError("The method 'forward' is not yet implemented")
 
     def backward(self) -> None:
@@ -75,9 +75,8 @@ class Add(Operator):
     def __init__(self) -> None:
         super().__init__(name="add", num_arguments=2)
 
-    def forward(self) -> None:
-        data = self.arguments[0].data + self.arguments[1].data
-        self._result = Scalar(data=data, operator=self)
+    def forward(self) -> float:
+        return self.arguments[0].data + self.arguments[1].data
 
     def backward(self) -> None:
         self.arguments[0].gradient += self.result.gradient
@@ -88,9 +87,8 @@ class Subtract(Operator):
     def __init__(self) -> None:
         super().__init__(name="subtract", num_arguments=2)
 
-    def forward(self) -> None:
-        data = self.arguments[0].data - self.arguments[1].data
-        self._result = Scalar(data=data, operator=self)
+    def forward(self) -> float:
+        return self.arguments[0].data - self.arguments[1].data
 
     def backward(self) -> None:
         self.arguments[0].gradient += self.result.gradient
@@ -101,9 +99,8 @@ class Multiply(Operator):
     def __init__(self) -> None:
         super().__init__(name="multiply", num_arguments=2)
 
-    def forward(self) -> None:
-        data = self.arguments[0].data * self.arguments[1].data
-        self._result = Scalar(data=data, operator=self)
+    def forward(self) -> float:
+        return self.arguments[0].data * self.arguments[1].data
 
     def backward(self) -> None:
         self.arguments[0].gradient += self.result.gradient * self.arguments[1].data
@@ -114,14 +111,9 @@ class Divide(Operator):
     def __init__(self) -> None:
         super().__init__(name="divide", num_arguments=2)
 
-    def forward(self) -> None:
-        a = self.arguments[0].data
-        b = self.arguments[1].data
-
-        assert b != 0, "Can not divide by zero"
-
-        data = a / b
-        self._result = Scalar(data=data, operator=self)
+    def forward(self) -> float:
+        assert self.arguments[1].data != 0, "Can not divide by zero"
+        return self.arguments[0].data / self.arguments[1].data
 
     def backward(self) -> None:
         self.arguments[0].gradient += self.result.gradient * (
@@ -138,9 +130,8 @@ class Power(Operator):
 
         self._power = power
 
-    def forward(self) -> None:
-        data = self.arguments[0].data ** self._power
-        self._result = Scalar(data=data, operator=self)
+    def forward(self) -> float:
+        return self.arguments[0].data ** self._power
 
     def backward(self) -> None:
         self.arguments[0].gradient += (
