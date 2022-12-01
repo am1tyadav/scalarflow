@@ -80,3 +80,14 @@ class Scalar(Identifiable):
         raise TypeError(
             "Argument 'scalar_like' can only be one of three types: Scalar, int or float"
         )
+
+    @staticmethod
+    def make_float(scalar_like: Self | int | float) -> float:
+        if isinstance(scalar_like, Scalar):
+            return scalar_like.data
+        if isinstance(scalar_like, (int, float)):
+            return float(scalar_like)
+
+        raise TypeError(
+            "Argument 'scalar_like' can only be one of three types: Scalar, int or float"
+        )
