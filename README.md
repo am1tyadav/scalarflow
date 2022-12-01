@@ -40,10 +40,10 @@ pip install .
 import scalarflow as sf
 
 
-mlp = sf.MLP(
+mlp = sf.models.MLP(
     layers=(
-        sf.Dense(output_dim=2, input_dim=2),
-        sf.Dense(output_dim=1, input_dim=2, activation=sf.sigmoid),
+        sf.layers.Dense(output_dim=2, input_dim=2),
+        sf.layers.Dense(output_dim=1, input_dim=2, activation=sf.operators.sigmoid),
     )
 )
 
@@ -52,7 +52,7 @@ mlp.fit(
     labels=labels,
     epochs=200,
     batch_size=4,
-    loss_fn=sf.mean_squared_error,
+    loss_fn=sf.losses.mean_squared_error,
     lr=0.009,
     log_interval=20,
     show_accuracy=True,
