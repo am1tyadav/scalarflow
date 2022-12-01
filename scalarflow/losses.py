@@ -1,7 +1,7 @@
 from typing import Tuple
 
-from scalarflow.core.operator import add, divide, power, subtract
 from scalarflow.core.scalar import Scalar
+from scalarflow.operators import add, divide, power, subtract
 
 
 def squared_error(y_true: Scalar, y_pred: Scalar) -> Scalar:

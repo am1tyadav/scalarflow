@@ -10,7 +10,7 @@ with open("requirements.txt", "r") as f:
 
 setuptools.setup(
     name="scalarflow",
-    version="0.1",
+    version="0.1.2",
     author="Amit Yadav",
     author_email="amit.yadav.iitr@gmail.com",
     description="A Machine Learning library written in pure Python for educational purpose.",

@@ -1,7 +1,8 @@
-from typing import Optional, Tuple, Union
+import math
+from typing import Optional, Tuple
 
 from scalarflow.core.common import Identifiable, SetPropertyNotAllowedError
-from scalarflow.core.scalar import Scalar, make_scalar
+from scalarflow.core.scalar import Scalar
 
 
 class Operator(Identifiable):
@@ -27,8 +28,10 @@ class Operator(Identifiable):
     def __repr__(self) -> str:
         return f"Operator(name={self._name}, num_arguments={self._num_arguments})"
 
-    def __call__(self, arguments: Union[Scalar, int, float]) -> Scalar:
-        self._arguments = [make_scalar(argument) for argument in arguments]
+    def __call__(self, arguments: Tuple[Scalar | int | float]) -> Scalar:
+        self._arguments = tuple(
+            [Scalar.make_scalar(argument) for argument in arguments]
+        )
         self._result = Scalar(data=self.forward(), operator=self)
         return self._result
 
@@ -141,65 +144,34 @@ class Power(Operator):
         )
 
 
-def add(a: Scalar, b: Scalar) -> Scalar:
-    """Convenience function to add two Scalars.
-    Args:
-        a: Scalar
-        b: Scalar
+class ReLU(Operator):
+    def __init__(self) -> None:
+        super().__init__(name="relu", num_arguments=1)
 
-    Returns:
-        a + b
-    """
-    return Add()(arguments=(a, b))
+    def forward(self) -> float:
+        return max(self.arguments[0].data, 0.0)
 
-
-def subtract(a: Scalar, b: Scalar) -> Scalar:
-    """Convenience function to subtract two Scalars.
-
-    Args:
-        a: Scalar
-        b: Scalar
-
-    Returns:
-        a - b
-    """
-    return Subtract()(arguments=(a, b))
+    def backward(self) -> None:
+        self.arguments[0].gradient += float(self.result.data > 0) * self.result.gradient
 
 
-def multiply(a: Scalar, b: Scalar) -> Scalar:
-    """Convenience function to multiply two scalars.
+class Sigmoid(Operator):
+    def __init__(self) -> None:
+        super().__init__(name="sigmoid", num_arguments=1)
 
-    Args:
-        a: Scalar
-        b: Scalar
+        self._epsilon = 1e-7
 
-    Returns:
-        a * b
-    """
-    return Multiply()(arguments=(a, b))
+    @staticmethod
+    def sigmoid(x: float) -> float:
+        return 1 / (1 + math.e ** (-x))
 
+    def forward(self) -> float:
+        return self.sigmoid(self.arguments[0].data)
 
-def divide(a: Scalar, b: Scalar) -> Scalar:
-    """Convenience function to divide two scalars.
-
-    Args:
-        a: Scalar
-        b: Scalar
-
-    Returns:
-        a / b
-    """
-    return Divide()(arguments=(a, b))
-
-
-def power(a: Scalar, b: int) -> Scalar:
-    """Convenience function to compute power of a Scalar.
-
-    Args:
-        a: Scalar
-        b: int value to be used as the power of the Scalar a
-
-    Returns:
-        a ** b
-    """
-    return Power(power=b)(arguments=(a,))
+    def backward(self) -> None:
+        x = self.arguments[0].data
+        self.arguments[0].gradient += (
+            self.result.gradient
+            * self.sigmoid(x)
+            / (1 - self.sigmoid(x) + self._epsilon)
+        )

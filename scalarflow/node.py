@@ -1,7 +1,7 @@
 from typing import Callable, Optional, Tuple
 
-from scalarflow.core.operator import add, multiply
 from scalarflow.core.scalar import Scalar
+from scalarflow.operators import add, multiply
 
 
 class Node:

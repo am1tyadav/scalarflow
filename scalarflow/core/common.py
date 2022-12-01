@@ -13,10 +13,17 @@ class SetPropertyNotAllowedError(Exception):
 
 class Identifiable:
     def __init__(self) -> None:
+        """Base class to be extended for any classes that need identifiable instances.
+        That is, every instance of this and derived classes will have a uuid
+        property which can be used as a unique id
+        """
+
         self._uuid = str(uuid.uuid4())
 
     @property
     def uuid(self) -> str:
+        "Returns the unique id of this Identifiable object as a string"
+
         return self._uuid
 
     @uuid.setter

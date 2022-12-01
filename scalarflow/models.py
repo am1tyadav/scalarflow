@@ -1,19 +1,31 @@
-from typing import Callable, Tuple, Union
+from typing import Callable, Tuple
 
 from scalarflow.core.scalar import Scalar
-from scalarflow.layer import Dense
+from scalarflow.layers import Dense
 from scalarflow.training import accuracy, optimisation_step
+
+ScalarLike = Scalar | int | float
 
 
 class MLP:
     def __init__(self, layers: Tuple[Dense]) -> None:
+        """Multi-layer perceptron.
+
+        Args:
+            layers: Tuple of layers
+
+        Raises:
+            AssertionError if the output dimension is not set to 1
+            for the final layer.
+        """
+
         self._layers = layers
 
         assert (
             layers[-1].output_dim == 1
         ), "Final layer of MLP must have output dimension of 1"
 
-    def __call__(self, inputs: Tuple[Scalar]) -> Union[Tuple[Scalar], Scalar]:
+    def __call__(self, inputs: Tuple[Scalar]) -> Tuple[Scalar] | Scalar:
         outputs = inputs
 
         for layer in self._layers:
@@ -23,8 +35,8 @@ class MLP:
 
     def log(
         self,
-        examples: Tuple[Tuple[Union[Scalar, int, float]]],
-        labels: Tuple[Union[Scalar, int, float]],
+        examples: Tuple[Tuple[ScalarLike]],
+        labels: Tuple[ScalarLike],
         epoch: int,
         total_loss: float,
         show_accuracy: bool,
@@ -39,8 +51,8 @@ class MLP:
 
     def fit(
         self,
-        examples: Tuple[Tuple[Union[Scalar, int, float]]],
-        labels: Tuple[Union[Scalar, int, float]],
+        examples: Tuple[Tuple[ScalarLike]],
+        labels: Tuple[ScalarLike],
         epochs: int,
         batch_size: int,
         loss_fn: Callable,
