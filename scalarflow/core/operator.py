@@ -29,6 +29,10 @@ class Operator(Identifiable):
         return f"Operator(name={self._name}, num_arguments={self._num_arguments})"
 
     def __call__(self, arguments: Tuple[Scalar | int | float]) -> Scalar:
+        assert (
+            len(arguments) == self.num_arguments
+        ), f"Expected number of arguments: {self.num_arguments}, but given {len(arguments)}"
+
         self._arguments = tuple(
             [Scalar.make_scalar(argument) for argument in arguments]
         )

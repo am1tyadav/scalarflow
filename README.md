@@ -47,15 +47,18 @@ mlp = sf.models.MLP(
     )
 )
 
-mlp.fit(
+mlp.compile(
+    loss_fn=sf.losses.mean_squared_error,
+    lr=0.009,
+    metrics=(sf.metrics.BinaryAccuracy(),),
+)
+
+_ = mlp.fit(
     examples=examples,
     labels=labels,
     epochs=200,
     batch_size=4,
-    loss_fn=sf.losses.mean_squared_error,
-    lr=0.009,
-    log_interval=20,
-    show_accuracy=True,
+    callbacks=(sf.callbacks.ConsoleLogger(log_interval=20),),
 )
 ```
 
