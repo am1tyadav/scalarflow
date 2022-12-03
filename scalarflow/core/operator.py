@@ -160,10 +160,10 @@ class ReLU(Operator):
 
 
 class Sigmoid(Operator):
-    def __init__(self) -> None:
+    def __init__(self, epsilon: float = 1e-7) -> None:
         super().__init__(name="sigmoid", num_arguments=1)
 
-        self._epsilon = 1e-7
+        self._epsilon = epsilon
 
     @staticmethod
     def sigmoid(x: float) -> float:
